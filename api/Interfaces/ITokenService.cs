@@ -16,6 +16,5 @@ namespace api.Interfaces
         bool ValidateRefreshToken(string token);
         bool ValidateAccessToken(string token);
         TokenData? GetTokenData(string token);
-        Task<bool> IsEmailTaken(string email);
     }
 }

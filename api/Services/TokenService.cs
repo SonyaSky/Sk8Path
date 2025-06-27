@@ -131,12 +131,5 @@ namespace api.Services
             }
             return null;
         }
-
-        public async Task<bool> IsEmailTaken(string email)
-        {
-            var applicant = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
-            if (applicant == null) return false;
-            return true;
-        }
     }
 }
