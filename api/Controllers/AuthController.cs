@@ -25,6 +25,8 @@ namespace api.Controllers
             _authService = authService;
         }
 
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPost("login")]
         [AllowAnonymous]
         [SwaggerOperation("Login")]
@@ -46,6 +48,8 @@ namespace api.Controllers
             return Ok(result);
         }
 
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPost("refresh")]
         [AllowAnonymous]
         [SwaggerOperation("Refresh token")]
@@ -59,6 +63,7 @@ namespace api.Controllers
             }
             return Ok(tokens);
         }
+
 
         [HttpPost("logout")]
         [Authorize]

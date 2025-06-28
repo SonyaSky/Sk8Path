@@ -7,6 +7,7 @@ using api.Dtos;
 using api.Dtos.Spots;
 using api.Extensions;
 using api.Interfaces;
+using api.Models;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace api.Controllers
             _spotService = spotService;
         }
 
+        [ProducesResponseType(typeof(List<SpotDto>), StatusCodes.Status200OK)]
         [HttpGet]
         [AllowAnonymous]
         [SwaggerOperation("Get all spots")]
@@ -34,6 +36,9 @@ namespace api.Controllers
             return Ok(spots);
         }
 
+        [ProducesResponseType(typeof(SpotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost]
         [Authorize]
         [SwaggerOperation("Create a new spot")]
@@ -46,6 +51,9 @@ namespace api.Controllers
             return Ok(spot);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("rating")]
         [Authorize]
         [SwaggerOperation("Add rating to spot")]

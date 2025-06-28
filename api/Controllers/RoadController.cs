@@ -7,6 +7,7 @@ using api.Dtos;
 using api.Dtos.Roads;
 using api.Extensions;
 using api.Interfaces;
+using api.Models;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace api.Controllers
             _roadService = roadService;
         }
 
+        [ProducesResponseType(typeof(List<RoadDto>), StatusCodes.Status200OK)]
         [HttpGet]
         [AllowAnonymous]
         [SwaggerOperation("Get all roads")]
@@ -34,6 +36,9 @@ namespace api.Controllers
             return Ok(roads);
         }
 
+        [ProducesResponseType(typeof(RoadDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost]
         [Authorize]
         [SwaggerOperation("Create a new road")]
@@ -46,6 +51,9 @@ namespace api.Controllers
             return Ok(road);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("rating")]
         [Authorize]
         [SwaggerOperation("Add rating to road")]
