@@ -2,22 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using api.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
 {
-    public class ApplicationDBContext: IdentityDbContext<User>
+    public class ApplicationDBContext : IdentityDbContext<User>
     {
         public ApplicationDBContext(DbContextOptions dbContextOptions)
         : base(dbContextOptions)
         {
-            
+
         }
 
-        public DbSet<User> Users { get; set; } 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Spot> Spots { get; set; }
+        public DbSet<RoadPoint> RoadPoints { get; set; }
+        public DbSet<Road> Roads { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -36,6 +42,7 @@ namespace api.Data
                 }
             };
             builder.Entity<IdentityRole>().HasData(roles);
+            builder.Entity<Rating>().HasKey(x => new { x.UserId, x.ObjectId });
         }
 
     }

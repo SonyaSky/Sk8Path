@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Identity;
-
 namespace api.Models
 {
-    public class User : IdentityUser
+    public class Spot : Point
     {
-        public string? RefreshToken { get; set; }
+        public string AuthorId { get; set; }
+        public User Author { get; set; }
+        public int RatingSum { get; set; }
         public List<Rating> Ratings { get; set; } = new List<Rating>();
     }
 }
