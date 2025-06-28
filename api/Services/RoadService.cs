@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using api.Data;
+using api.Dtos;
 using api.Dtos.Roads;
 using api.Interfaces;
 using api.Mappers;
@@ -64,6 +65,39 @@ namespace api.Services
                 .Select(x => x.ToDto())
                 .ToListAsync();
             return roads;
+        }
+
+        public async Task<ResponseModel?> RateRoad(CreateRatingDto ratingDto, string userId)
+        {
+            var road = await _context.Roads.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);
+            if (road == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Road with id={ratingDto.ObjectId} not found"
+                };
+            }
+            var isAlreadyRated = await _context.Ratings.AnyAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
+            if (isAlreadyRated)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: BadRequest",
+                    Message = "You have already rated this road"
+                };
+            }
+            var rating = new Rating
+            {
+                UserId = userId,
+                ObjectId = road.Id,
+                Score = ratingDto.Rating
+            };
+            await _context.Ratings.AddAsync(rating);
+            road.RatingSum += ratingDto.Rating;
+            road.Ratings.Add(rating);
+            await _context.SaveChangesAsync();
+            return null;
         }
     }
 }

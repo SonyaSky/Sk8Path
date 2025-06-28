@@ -19,7 +19,9 @@ namespace api.Mappers
                 Longitude = spot.Longitude,
                 CreateDate = spot.CreateDate,
                 AuthorId = spot.AuthorId,
-                Rating = spot.Ratings.Count == 0 ? spot.RatingSum : spot.RatingSum / spot.Ratings.Count
+                Rating = spot.Ratings.Count == 0
+                    ? 0
+                    : (double)spot.RatingSum / spot.Ratings.Count
             };
         }
     }

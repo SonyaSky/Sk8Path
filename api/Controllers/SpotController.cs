@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using api.Dtos;
 using api.Dtos.Spots;
 using api.Extensions;
 using api.Interfaces;
@@ -43,6 +44,20 @@ namespace api.Controllers
 
             var spot = await _spotService.CreateSpot(spotDto, User.GetId());
             return Ok(spot);
+        }
+
+        [HttpPost("rating")]
+        [Authorize]
+        [SwaggerOperation("Add rating to spot")]
+        public async Task<IActionResult> AddRatingToSpot([FromBody] CreateRatingDto dto)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var response = await _spotService.RateSpot(dto, User.GetId());
+            if (response == null) return Ok();
+            if (response.Status == "Error: NotFound") return NotFound(response);
+            return BadRequest(response);
         }
     }
 }

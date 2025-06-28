@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using api.Dtos;
 using api.Dtos.Roads;
 using api.Extensions;
 using api.Interfaces;
@@ -43,6 +44,20 @@ namespace api.Controllers
 
             var road = await _roadService.CreateRoad(dto, User.GetId());
             return Ok(road);
+        }
+
+        [HttpPost("rating")]
+        [Authorize]
+        [SwaggerOperation("Add rating to road")]
+        public async Task<IActionResult> AddRatingToSpot([FromBody] CreateRatingDto dto)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var response = await _roadService.RateRoad(dto, User.GetId());
+            if (response == null) return Ok();
+            if (response.Status == "Error: NotFound") return NotFound(response);
+            return BadRequest(response);
         }
     }
 }

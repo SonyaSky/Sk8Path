@@ -39,7 +39,9 @@ namespace api.Mappers
             {
                 Id = road.Id,
                 AuthorId = road.AuthorId,
-                Rating = road.Ratings.Count == 0 ? road.RatingSum : road.RatingSum / road.Ratings.Count,
+                Rating = road.Ratings.Count == 0
+                    ? 0
+                    : (double)road.RatingSum / road.Ratings.Count,
                 Points = road.Points.Select(p => p.ToDto()).ToList()
             };
         }

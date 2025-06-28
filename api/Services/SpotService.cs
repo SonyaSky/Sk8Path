@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using api.Data;
+using api.Dtos;
 using api.Dtos.Spots;
 using api.Interfaces;
 using api.Mappers;
@@ -48,6 +49,39 @@ namespace api.Services
         {
             var spots = await _context.Spots.Include(x => x.Ratings).Select(x => x.ToDto()).ToListAsync();
             return spots;
+        }
+
+        public async Task<ResponseModel?> RateSpot(CreateRatingDto ratingDto, string userId)
+        {
+            var spot = await _context.Spots.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);
+            if (spot == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={ratingDto.ObjectId} not found"
+                };
+            }
+            var isAlreadyRated = await _context.Ratings.AnyAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
+            if (isAlreadyRated)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: BadRequest",
+                    Message = "You have already rated this spot"
+                };
+            }
+            var rating = new Rating
+            {
+                UserId = userId,
+                ObjectId = spot.Id,
+                Score = ratingDto.Rating
+            };
+            await _context.Ratings.AddAsync(rating);
+            spot.RatingSum += ratingDto.Rating;
+            spot.Ratings.Add(rating);
+            await _context.SaveChangesAsync();
+            return null;
         }
     }
 }
