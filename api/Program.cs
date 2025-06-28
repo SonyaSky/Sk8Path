@@ -66,7 +66,7 @@ builder.Services.AddSwaggerGen(option =>
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SonyaConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
 });
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -116,11 +116,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.Run("http://*:80");
