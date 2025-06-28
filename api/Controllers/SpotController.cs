@@ -10,6 +10,8 @@ using api.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace api.Controllers
 {
     [ApiController]
@@ -24,6 +26,7 @@ namespace api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [SwaggerOperation("Get all spots")]
         public async Task<IActionResult> GetAllSpots()
         {
             var spots = await _spotService.GetAllSpots();
@@ -32,6 +35,7 @@ namespace api.Controllers
 
         [HttpPost]
         [Authorize]
+        [SwaggerOperation("Create a new spot")]
         public async Task<IActionResult> CreateSpot([FromBody] CreateSpotDto spotDto)
         {
             if (!User.IsAccessToken()) return Unauthorized();

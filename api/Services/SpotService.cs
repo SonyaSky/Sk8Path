@@ -24,7 +24,7 @@ namespace api.Services
         {
             var spot = new Spot
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 AuthorId = userId,
                 RatingSum = spotDto.Rating,
                 Latitude = spotDto.Latitude,

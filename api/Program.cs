@@ -105,6 +105,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISpotService, SpotService>();
+builder.Services.AddScoped<IRoadService, RoadService>();
 
 var app = builder.Build();
 

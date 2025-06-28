@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
 
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace api.Controllers
 {
     [ApiController]
@@ -30,6 +32,7 @@ namespace api.Controllers
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPost("register")]
         [AllowAnonymous]
+        [SwaggerOperation("Register a new user")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
         {
             try
@@ -66,6 +69,7 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("profile")]
         [Authorize]
+        [SwaggerOperation("Get current's user profile")]
         public async Task<IActionResult> GetProfile()
         {
             if (!User.IsAccessToken()) return Unauthorized();
@@ -78,6 +82,7 @@ namespace api.Controllers
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPut("profile")]
         [Authorize]
+        [SwaggerOperation("Edit current user's profile")]
         public async Task<IActionResult> EditProfile([FromBody] EditProfileDto profileDto)
         {
             if (!User.IsAccessToken()) return Unauthorized();
