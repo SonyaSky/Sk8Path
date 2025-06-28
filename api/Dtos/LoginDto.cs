@@ -10,10 +10,9 @@ namespace api.Dtos
     {
         [Required]
         [MinLength(1, ErrorMessage = "The Email field is required.")]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public required string Username { get; set; }
         [Required]
         [MinLength(1, ErrorMessage = "The Password field is required.")]
-        public string? Password { get; set; }
+        public required string Password { get; set; }
     }
 }

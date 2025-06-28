@@ -1,10 +1,13 @@
 using System.Text.Json.Serialization;
+
 using api.Data;
 using api.Interfaces;
 using api.Models;
 using api.Services;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -15,9 +18,9 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()); 
+        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
     });
-    
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -33,6 +36,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(option =>
 {
+    option.MapType<ProblemDetails>(() => new OpenApiSchema { Type = "object" });
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Sk8path Api", Version = "v1" });
     option.EnableAnnotations();
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -60,11 +64,13 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddDbContext<ApplicationDBContext>(options => {
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("SonyaConnection"));
 });
 
-builder.Services.AddIdentity<User, IdentityRole>(options => {
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
     options.Password.RequireUppercase = false;

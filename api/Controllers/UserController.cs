@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using api.Dtos;
 using api.Extensions;
 using api.Interfaces;
 using api.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
@@ -24,6 +26,8 @@ namespace api.Controllers
             _tokenService = tokenService;
         }
 
+        [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
@@ -58,6 +62,8 @@ namespace api.Controllers
             }
         }
 
+        [ProducesResponseType(typeof(ProfileDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> GetProfile()
@@ -67,6 +73,9 @@ namespace api.Controllers
             return Ok(profile);
         }
 
+        [ProducesResponseType(typeof(ProfileDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status400BadRequest)]
         [HttpPut("profile")]
         [Authorize]
         public async Task<IActionResult> EditProfile([FromBody] EditProfileDto profileDto)

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+
 using api.Dtos;
 using api.Interfaces;
 using api.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +30,7 @@ namespace api.Services
 
         public async Task<string> CreateAccessToken(string id, IList<string> roles)
         {
-            return await CreateToken(id, roles, DateTime.Now.AddMinutes(60), "AccessToken");
+            return await CreateToken(id, roles, DateTime.Now.AddMinutes(5), "AccessToken");
         }
 
         public async Task<string> CreateRefreshToken(string id, IList<string> roles)
@@ -52,7 +54,8 @@ namespace api.Services
             }
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
-            var tokenDescriptor = new SecurityTokenDescriptor {
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
                 Subject = new ClaimsIdentity(claims),
                 Expires = expirationDate,
                 SigningCredentials = creds,
@@ -76,7 +79,7 @@ namespace api.Services
             var user = _userManager.Users.FirstOrDefault(u => u.Id == data.Id);
             if (user == null || user.RefreshToken != token) return false;
 
-            return true; 
+            return true;
         }
 
         public bool ValidateAccessToken(string token)
@@ -92,7 +95,8 @@ namespace api.Services
             var tokenData = GetTokenData(token);
             if (tokenData != null)
             {
-                if (tokenData.TokenType == null || tokenData.TokenType != type) {
+                if (tokenData.TokenType == null || tokenData.TokenType != type)
+                {
                     return null;
                 }
                 return tokenData.Id;
@@ -114,20 +118,23 @@ namespace api.Services
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            try {
+            try
+            {
                 var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
-                if (principal != null && principal.Identity.IsAuthenticated) {
-                return new TokenData {
-                    Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    TokenType = principal.FindFirst("TokenType")?.Value,
-                    Roles = principal.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList()
-                };
-            }
+                if (principal != null && principal.Identity.IsAuthenticated)
+                {
+                    return new TokenData
+                    {
+                        Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                        TokenType = principal.FindFirst("TokenType")?.Value,
+                        Roles = principal.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList()
+                    };
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Token validation failed: {ex.Message}");
-                return null; 
+                return null;
             }
             return null;
         }
