@@ -62,24 +62,27 @@ namespace api.Services
                     Message = $"Spot with id={ratingDto.ObjectId} not found"
                 };
             }
-            var isAlreadyRated = await _context.Ratings.AnyAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
-            if (isAlreadyRated)
+            var isAlreadyRated = await _context.Ratings.FirstOrDefaultAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
+            if (isAlreadyRated != null)
             {
-                return new ResponseModel
-                {
-                    Status = "Error: BadRequest",
-                    Message = "You have already rated this spot"
-                };
+                spot.RatingSum -= isAlreadyRated.Score;
+                spot.RatingSum += ratingDto.Rating;
+                isAlreadyRated.Score = ratingDto.Rating;
+                var oldRating = spot.Ratings.FirstOrDefault(x => x.ObjectId == ratingDto.ObjectId);
+                oldRating.Score = ratingDto.Rating;
             }
-            var rating = new Rating
+            else
             {
-                UserId = userId,
-                ObjectId = spot.Id,
-                Score = ratingDto.Rating
-            };
-            await _context.Ratings.AddAsync(rating);
-            spot.RatingSum += ratingDto.Rating;
-            spot.Ratings.Add(rating);
+                var rating = new Rating
+                {
+                    UserId = userId,
+                    ObjectId = spot.Id,
+                    Score = ratingDto.Rating
+                };
+                await _context.Ratings.AddAsync(rating);
+                spot.RatingSum += ratingDto.Rating;
+                spot.Ratings.Add(rating);
+            }
             await _context.SaveChangesAsync();
             return null;
         }

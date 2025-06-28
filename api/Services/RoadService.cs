@@ -78,24 +78,27 @@ namespace api.Services
                     Message = $"Road with id={ratingDto.ObjectId} not found"
                 };
             }
-            var isAlreadyRated = await _context.Ratings.AnyAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
-            if (isAlreadyRated)
+            var isAlreadyRated = await _context.Ratings.FirstOrDefaultAsync(x => x.ObjectId == ratingDto.ObjectId && x.UserId == userId);
+            if (isAlreadyRated != null)
             {
-                return new ResponseModel
-                {
-                    Status = "Error: BadRequest",
-                    Message = "You have already rated this road"
-                };
+                road.RatingSum -= isAlreadyRated.Score;
+                road.RatingSum += ratingDto.Rating;
+                isAlreadyRated.Score = ratingDto.Rating;
+                var oldRating = road.Ratings.FirstOrDefault(x => x.ObjectId == ratingDto.ObjectId);
+                oldRating.Score = ratingDto.Rating;
             }
-            var rating = new Rating
+            else
             {
-                UserId = userId,
-                ObjectId = road.Id,
-                Score = ratingDto.Rating
-            };
-            await _context.Ratings.AddAsync(rating);
-            road.RatingSum += ratingDto.Rating;
-            road.Ratings.Add(rating);
+                var rating = new Rating
+                {
+                    UserId = userId,
+                    ObjectId = road.Id,
+                    Score = ratingDto.Rating
+                };
+                await _context.Ratings.AddAsync(rating);
+                road.RatingSum += ratingDto.Rating;
+                road.Ratings.Add(rating);
+            }
             await _context.SaveChangesAsync();
             return null;
         }
