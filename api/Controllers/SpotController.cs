@@ -89,6 +89,40 @@ namespace api.Controllers
             return Ok(spots);
         }
 
+        [ProducesResponseType(typeof(List<SpotDto>), StatusCodes.Status200OK)]
+        [HttpGet("favourite")]
+        [Authorize]
+        [SwaggerOperation("Get user's favourite spots")]
+        public async Task<IActionResult> GetFavouriteSpots()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var spots = await _spotService.ShowFavouriteSpots(User.GetId());
+            return Ok(spots);
+        }
+
+        [Authorize]
+        [HttpDelete("favorites/{id}")]
+        [SwaggerOperation("Remove spot from favorites")]
+        public async Task<IActionResult> RemoveFavorite([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.RemoveFromFavourites(id, User.GetId());
+            if (response == null) return Ok();
+            return BadRequest(response);
+        }
+
+        [Authorize]
+        [HttpPost("favorites/{id}")]
+        [SwaggerOperation("Get add a spot to favorites")]
+        public async Task<IActionResult> AddFavorite([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.AddToFavourites(id, User.GetId());
+            if (response == null) return Ok();
+            if (response.Status == "Error: NotFound") return NotFound(response);
+            return BadRequest(response);
+        }
+
         [HttpPut("{id}/delete")]
         [Authorize]
         [SwaggerOperation("Send request to delete this spot")]

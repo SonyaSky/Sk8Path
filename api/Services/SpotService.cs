@@ -22,6 +22,37 @@ namespace api.Services
             _context = context;
         }
 
+        public async Task<ResponseModel?> AddToFavourites(Guid id, string userId)
+        {
+            var spot = await _context.Spots.FirstOrDefaultAsync(s => s.Id == id);
+            if (spot == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={id} not found"
+                };
+            }
+            var exists = await _context.FavoriteSpots
+                .AnyAsync(f => f.UserId == userId && f.SpotId == id);
+            if (!exists)
+            {
+                var fav = new FavoriteSpot
+                {
+                    UserId = userId,
+                    SpotId = id
+                };
+                _context.FavoriteSpots.Add(fav);
+                await _context.SaveChangesAsync();
+                return null;
+            }
+            return new ResponseModel
+            {
+                Status = "Error: BadRequest",
+                Message = $"Spot with id={id} already added to favorites"
+            };
+        }
+
         public async Task<ResponseModel?> ApproveDeleting(Guid id)
         {
             var spot = await _context.Spots.FirstOrDefaultAsync(x => x.Id == id);
@@ -135,6 +166,23 @@ namespace api.Services
             return null;
         }
 
+        public async Task<ResponseModel?> RemoveFromFavourites(Guid id, string userId)
+        {
+            var favorite = await _context.FavoriteSpots
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.SpotId == id);
+
+            if (favorite == null)
+                return new ResponseModel
+                {
+                    Status = "Error: BadRequest",
+                    Message = $"Spot with id={id} isn't in your favorites"
+                };
+
+            _context.FavoriteSpots.Remove(favorite);
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
         public async Task<ResponseModel?> SendRequestToDelete(Guid id)
         {
             var spot = await _context.Spots.FirstOrDefaultAsync(x => x.Id == id);
@@ -149,6 +197,18 @@ namespace api.Services
             spot.IsToBeDeleted = true;
             await _context.SaveChangesAsync();
             return null;
+        }
+
+        public async Task<List<SpotDto>> ShowFavouriteSpots(string userId)
+        {
+            var favoriteSpots = await _context.FavoriteSpots
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Spot)
+                    .ThenInclude(s => s.Ratings)
+                .Select(f => f.Spot.ToDto())
+                .ToListAsync();
+
+            return favoriteSpots;
         }
 
         public async Task<List<SpotDto>> ShowToDeleteSpots()

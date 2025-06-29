@@ -19,5 +19,8 @@ namespace api.Interfaces
         Task<ResponseModel?> SendRequestToDelete(Guid id);
         Task<ResponseModel?> ApproveDeleting(Guid id);
         Task<ResponseModel?> DeclineDeleting(Guid id);
+        Task<List<SpotDto>> ShowFavouriteSpots(string userId);
+        Task<ResponseModel?> AddToFavourites(Guid id, string userId);
+        Task<ResponseModel?> RemoveFromFavourites(Guid id, string userId);
     }
 }

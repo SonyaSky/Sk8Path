@@ -15,5 +15,6 @@ namespace api.Models
         public int RatingSum { get; set; }
         public bool IsToBeDeleted { get; set; } = false;
         public List<Rating> Ratings { get; set; } = new List<Rating>();
+        public List<FavoriteSpot> FavoritedByUsers { get; set; } = new List<FavoriteSpot>();
     }
 }

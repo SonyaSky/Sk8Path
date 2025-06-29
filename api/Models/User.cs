@@ -12,5 +12,6 @@ namespace api.Models
         public string? RefreshToken { get; set; }
         public Guid? AvatarId { get; set; }
         public List<Rating> Ratings { get; set; } = new List<Rating>();
+        public List<FavoriteSpot> FavoriteSpots { get; set; } = new List<FavoriteSpot>();
     }
 }

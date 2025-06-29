@@ -25,6 +25,7 @@ namespace api.Data
         public DbSet<Road> Roads { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Models.File> Files { get; set; }
+        public DbSet<FavoriteSpot> FavoriteSpots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -44,6 +45,19 @@ namespace api.Data
             };
             builder.Entity<IdentityRole>().HasData(roles);
             builder.Entity<Rating>().HasKey(x => new { x.UserId, x.ObjectId });
+
+            builder.Entity<FavoriteSpot>()
+                .HasKey(f => new { f.UserId, f.SpotId });
+
+            builder.Entity<FavoriteSpot>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.FavoriteSpots)
+                .HasForeignKey(f => f.UserId);
+
+            builder.Entity<FavoriteSpot>()
+                .HasOne(f => f.Spot)
+                .WithMany(s => s.FavoritedByUsers)
+                .HasForeignKey(f => f.SpotId);
         }
 
     }
