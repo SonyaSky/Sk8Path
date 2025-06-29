@@ -114,8 +114,8 @@ namespace api.Controllers
 
         [HttpGet("deleting")]
         [Authorize(Roles = "Admin")]
-        [SwaggerOperation("Get all spots that have request to delete them")]
-        public async Task<IActionResult> SendRequestToDelete()
+        [SwaggerOperation("Get all spots that have request to delete them (for admin)")]
+        public async Task<IActionResult> GetAllToDeleteSpots()
         {
             if (!User.IsAccessToken()) return Unauthorized();
             var response = await _spotService.ShowToDeleteSpots();
