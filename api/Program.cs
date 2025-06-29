@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -116,6 +117,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISpotService, SpotService>();
 builder.Services.AddScoped<IRoadService, RoadService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 
@@ -127,6 +129,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
+
+var fileFolder = Path.Combine(builder.Environment.ContentRootPath, "Files");
+if (!Directory.Exists(fileFolder))
+{
+    Directory.CreateDirectory(fileFolder);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "Files")),
+    RequestPath = "/file"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

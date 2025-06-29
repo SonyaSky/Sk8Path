@@ -21,9 +21,11 @@ namespace api.Controllers
     public class SpotController : ControllerBase
     {
         private readonly ISpotService _spotService;
-        public SpotController(ISpotService spotService)
+        private readonly IFileService _fileService;
+        public SpotController(ISpotService spotService, IFileService fileService)
         {
             _spotService = spotService;
+            _fileService = fileService;
         }
 
         [ProducesResponseType(typeof(List<SpotDto>), StatusCodes.Status200OK)]
@@ -46,6 +48,14 @@ namespace api.Controllers
         {
             if (!User.IsAccessToken()) return Unauthorized();
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (spotDto.FileId != null && !await _fileService.DoesFileExists((Guid)spotDto.FileId))
+            {
+                return NotFound(new ResponseModel
+                {
+                    Status = "Error",
+                    Message = $"File with id={spotDto.FileId} not found"
+                });
+            }
 
             var spot = await _spotService.CreateSpot(spotDto, User.GetId());
             return Ok(spot);

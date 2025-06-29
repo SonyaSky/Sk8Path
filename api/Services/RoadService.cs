@@ -30,7 +30,7 @@ namespace api.Services
                 return new ResponseModel
                 {
                     Status = "Error: NotFound",
-                    Message = $"Spot with id={id} not found"
+                    Message = $"Road with id={id} not found"
                 };
             }
             var ratings = await _context.Ratings.Where(x => x.ObjectId == road.Id).ToListAsync();
@@ -48,7 +48,10 @@ namespace api.Services
             {
                 Id = Guid.NewGuid(),
                 AuthorId = userId,
-                RatingSum = roadDto.Rating
+                RatingSum = roadDto.Rating,
+                Name = roadDto.Name,
+                Description = roadDto.Description,
+                FileId = roadDto.FileId
             };
             var rating = new Rating
             {

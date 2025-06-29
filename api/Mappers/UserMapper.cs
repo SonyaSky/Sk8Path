@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using api.Dtos;
 using api.Models;
 
@@ -17,6 +18,7 @@ namespace api.Mappers
                 Email = user.Email,
                 Username = user.UserName,
                 PhoneNumber = user.PhoneNumber,
+                FileId = user.AvatarId
             };
         }
 
@@ -27,6 +29,7 @@ namespace api.Mappers
                 Email = dto.Email,
                 UserName = dto.Username,
                 PhoneNumber = dto.PhoneNumber,
+                AvatarId = dto.FileId
             };
         }
     }

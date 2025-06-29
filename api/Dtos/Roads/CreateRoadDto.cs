@@ -13,6 +13,9 @@ namespace api.Dtos.Roads
         [Required]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int Rating { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public Guid? FileId { get; set; }
         [Required]
         [MinCount(2, ErrorMessage = "At least 2 points are required.")]
         public List<CreateRoadPointDto> Points { get; set; } = new List<CreateRoadPointDto>();

@@ -19,5 +19,6 @@ namespace api.Dtos
         public string Password { get; set; } = string.Empty;
         [PhoneNumber]
         public string? PhoneNumber { get; set; }
+        public Guid? FileId { get; set; }
     }
 }

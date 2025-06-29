@@ -10,6 +10,9 @@ namespace api.Dtos.Spots
         public Guid Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public Guid? FileId { get; set; }
         public DateTime CreateDate { get; set; }
         public string AuthorId { get; set; }
         public double Rating { get; set; }

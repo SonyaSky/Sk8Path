@@ -19,6 +19,9 @@ namespace api.Mappers
                 Longitude = spot.Longitude,
                 CreateDate = spot.CreateDate,
                 AuthorId = spot.AuthorId,
+                FileId = spot.FileId,
+                Name = spot.Name,
+                Description = spot.Description,
                 Rating = spot.Ratings.Count == 0
                     ? 0
                     : (double)spot.RatingSum / spot.Ratings.Count

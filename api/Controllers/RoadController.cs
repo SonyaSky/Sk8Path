@@ -21,9 +21,11 @@ namespace api.Controllers
     public class RoadController : ControllerBase
     {
         private readonly IRoadService _roadService;
-        public RoadController(IRoadService roadService)
+        private readonly IFileService _fileService;
+        public RoadController(IRoadService roadService, IFileService fileService)
         {
             _roadService = roadService;
+            _fileService = fileService;
         }
 
         [ProducesResponseType(typeof(List<RoadDto>), StatusCodes.Status200OK)]
@@ -46,6 +48,14 @@ namespace api.Controllers
         {
             if (!User.IsAccessToken()) return Unauthorized();
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (dto.FileId != null && !await _fileService.DoesFileExists((Guid)dto.FileId))
+            {
+                return NotFound(new ResponseModel
+                {
+                    Status = "Error",
+                    Message = $"File with id={dto.FileId} not found"
+                });
+            }
 
             var road = await _roadService.CreateRoad(dto, User.GetId());
             return Ok(road);
