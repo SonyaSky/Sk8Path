@@ -21,6 +21,27 @@ namespace api.Services
         {
             _context = context;
         }
+
+        public async Task<ResponseModel?> ApproveDeleting(Guid id)
+        {
+            var road = await _context.Roads.FirstOrDefaultAsync(x => x.Id == id);
+            if (road == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={id} not found"
+                };
+            }
+            var ratings = await _context.Ratings.Where(x => x.ObjectId == road.Id).ToListAsync();
+            _context.Ratings.RemoveRange(ratings);
+            var roadPoints = await _context.RoadPoints.Where(x => x.RoadId == road.Id).ToListAsync();
+            _context.RoadPoints.RemoveRange(roadPoints);
+            _context.Roads.Remove(road);
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
         public async Task<RoadDto> CreateRoad(CreateRoadDto roadDto, string userId)
         {
             var road = new Road
@@ -57,11 +78,38 @@ namespace api.Services
             return road.ToDto();
         }
 
+        public async Task<ResponseModel?> DeclineDeleting(Guid id)
+        {
+            var road = await _context.Roads.FirstOrDefaultAsync(x => x.Id == id);
+            if (road == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Road with id={id} not found"
+                };
+            }
+            road.IsToBeDeleted = false;
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
         public async Task<List<RoadDto>> GetAllRoads()
         {
             var roads = await _context.Roads
                 .Include(x => x.Points)
                 .Include(x => x.Ratings)
+                .Select(x => x.ToDto())
+                .ToListAsync();
+            return roads;
+        }
+
+        public async Task<List<RoadDto>> GetMyRoads(string userId)
+        {
+            var roads = await _context.Roads
+                .Include(x => x.Points)
+                .Include(x => x.Ratings)
+                .Where(x => x.AuthorId == userId)
                 .Select(x => x.ToDto())
                 .ToListAsync();
             return roads;
@@ -101,6 +149,32 @@ namespace api.Services
             }
             await _context.SaveChangesAsync();
             return null;
+        }
+
+        public async Task<ResponseModel?> SendRequestToDelete(Guid id)
+        {
+            var road = await _context.Roads.FirstOrDefaultAsync(x => x.Id == id);
+            if (road == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Road with id={id} not found"
+                };
+            }
+            road.IsToBeDeleted = true;
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
+        public async Task<List<RoadDto>> ShowToDeleteRoads()
+        {
+            return await _context.Roads
+                .Include(x => x.Points)
+                .Include(x => x.Ratings)
+                .Where(x => x.IsToBeDeleted)
+                .Select(x => x.ToDto())
+                .ToListAsync();
         }
     }
 }

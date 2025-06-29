@@ -21,6 +21,25 @@ namespace api.Services
         {
             _context = context;
         }
+
+        public async Task<ResponseModel?> ApproveDeleting(Guid id)
+        {
+            var spot = await _context.Spots.FirstOrDefaultAsync(x => x.Id == id);
+            if (spot == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={id} not found"
+                };
+            }
+            var ratings = await _context.Ratings.Where(x => x.ObjectId == spot.Id).ToListAsync();
+            _context.Ratings.RemoveRange(ratings);
+            _context.Spots.Remove(spot);
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
         public async Task<SpotDto> CreateSpot(CreateSpotDto spotDto, string userId)
         {
             var spot = new Spot
@@ -45,9 +64,35 @@ namespace api.Services
             return spot.ToDto();
         }
 
+        public async Task<ResponseModel?> DeclineDeleting(Guid id)
+        {
+            var spot = await _context.Spots.FirstOrDefaultAsync(x => x.Id == id);
+            if (spot == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={id} not found"
+                };
+            }
+            spot.IsToBeDeleted = false;
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
         public async Task<List<SpotDto>> GetAllSpots()
         {
             var spots = await _context.Spots.Include(x => x.Ratings).Select(x => x.ToDto()).ToListAsync();
+            return spots;
+        }
+
+        public async Task<List<SpotDto>> GetMySpots(string userId)
+        {
+            var spots = await _context.Spots
+                .Include(x => x.Ratings)
+                .Where(x => x.AuthorId == userId)
+                .Select(x => x.ToDto())
+                .ToListAsync();
             return spots;
         }
 
@@ -85,6 +130,31 @@ namespace api.Services
             }
             await _context.SaveChangesAsync();
             return null;
+        }
+
+        public async Task<ResponseModel?> SendRequestToDelete(Guid id)
+        {
+            var spot = await _context.Spots.FirstOrDefaultAsync(x => x.Id == id);
+            if (spot == null)
+            {
+                return new ResponseModel
+                {
+                    Status = "Error: NotFound",
+                    Message = $"Spot with id={id} not found"
+                };
+            }
+            spot.IsToBeDeleted = true;
+            await _context.SaveChangesAsync();
+            return null;
+        }
+
+        public async Task<List<SpotDto>> ShowToDeleteSpots()
+        {
+            return await _context.Spots
+                .Include(x => x.Ratings)
+                .Where(x => x.IsToBeDeleted)
+                .Select(x => x.ToDto())
+                .ToListAsync();
         }
     }
 }

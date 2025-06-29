@@ -67,5 +67,59 @@ namespace api.Controllers
             if (response.Status == "Error: NotFound") return NotFound(response);
             return BadRequest(response);
         }
+
+        [ProducesResponseType(typeof(List<RoadDto>), StatusCodes.Status200OK)]
+        [HttpGet("my")]
+        [Authorize]
+        [SwaggerOperation("Get roads created by this user")]
+        public async Task<IActionResult> GetMyRoads()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var roads = await _roadService.GetMyRoads(User.GetId());
+            return Ok(roads);
+        }
+
+        [HttpPut("{id}/delete")]
+        [Authorize]
+        [SwaggerOperation("Send request to delete this road")]
+        public async Task<IActionResult> SendRequestToDelete([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _roadService.SendRequestToDelete(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpPut("{id}/decline")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Decline request to delete road (for admin)")]
+        public async Task<IActionResult> DeclineDeletingSpot([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _roadService.DeclineDeleting(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpDelete("{id}/approve")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Approve request to delete road (for admin)")]
+        public async Task<IActionResult> ApproveDeletingSpot([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _roadService.ApproveDeleting(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpGet("deleting")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Get all roads that have request to delete them (for admin)")]
+        public async Task<IActionResult> GetAllToDeleteRoads()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _roadService.ShowToDeleteRoads();
+            return Ok(response);
+        }
     }
 }
