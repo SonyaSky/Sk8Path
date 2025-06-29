@@ -67,5 +67,16 @@ namespace api.Controllers
             if (response.Status == "Error: NotFound") return NotFound(response);
             return BadRequest(response);
         }
+
+        [ProducesResponseType(typeof(List<SpotDto>), StatusCodes.Status200OK)]
+        [HttpGet("my")]
+        [Authorize]
+        [SwaggerOperation("Get spots created by this user")]
+        public async Task<IActionResult> GetMySpots()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var roads = await _spotService.GetMySpots(User.GetId());
+            return Ok(roads);
+        }
     }
 }

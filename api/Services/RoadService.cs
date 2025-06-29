@@ -67,6 +67,17 @@ namespace api.Services
             return roads;
         }
 
+        public async Task<List<RoadDto>> GetMyRoads(string userId)
+        {
+            var roads = await _context.Roads
+                .Include(x => x.Points)
+                .Include(x => x.Ratings)
+                .Where(x => x.AuthorId == userId)
+                .Select(x => x.ToDto())
+                .ToListAsync();
+            return roads;
+        }
+
         public async Task<ResponseModel?> RateRoad(CreateRatingDto ratingDto, string userId)
         {
             var road = await _context.Roads.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);

@@ -14,5 +14,6 @@ namespace api.Interfaces
         Task<List<RoadDto>> GetAllRoads();
         Task<RoadDto> CreateRoad(CreateRoadDto roadDto, string userId);
         Task<ResponseModel?> RateRoad(CreateRatingDto ratingDto, string userId);
+        Task<List<RoadDto>> GetMyRoads(string userId);
     }
 }

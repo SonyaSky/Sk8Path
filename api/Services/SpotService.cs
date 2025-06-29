@@ -51,6 +51,16 @@ namespace api.Services
             return spots;
         }
 
+        public async Task<List<SpotDto>> GetMySpots(string userId)
+        {
+            var spots = await _context.Spots
+                .Include(x => x.Ratings)
+                .Where(x => x.AuthorId == userId)
+                .Select(x => x.ToDto())
+                .ToListAsync();
+            return spots;
+        }
+
         public async Task<ResponseModel?> RateSpot(CreateRatingDto ratingDto, string userId)
         {
             var spot = await _context.Spots.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);

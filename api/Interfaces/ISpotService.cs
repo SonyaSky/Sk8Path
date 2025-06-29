@@ -14,5 +14,6 @@ namespace api.Interfaces
         Task<SpotDto> CreateSpot(CreateSpotDto spotDto, string userId);
         Task<List<SpotDto>> GetAllSpots();
         Task<ResponseModel?> RateSpot(CreateRatingDto ratingDto, string userId);
+        Task<List<SpotDto>> GetMySpots(string userId);
     }
 }

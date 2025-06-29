@@ -67,5 +67,16 @@ namespace api.Controllers
             if (response.Status == "Error: NotFound") return NotFound(response);
             return BadRequest(response);
         }
+
+        [ProducesResponseType(typeof(List<RoadDto>), StatusCodes.Status200OK)]
+        [HttpGet("my")]
+        [Authorize]
+        [SwaggerOperation("Get roads created by this user")]
+        public async Task<IActionResult> GetMyRoads()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var roads = await _roadService.GetMyRoads(User.GetId());
+            return Ok(roads);
+        }
     }
 }
