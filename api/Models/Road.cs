@@ -11,6 +11,7 @@ namespace api.Models
         public string AuthorId { get; set; }
         public User Author { get; set; }
         public int RatingSum { get; set; }
+        public bool IsToBeDeleted { get; set; } = false;
         public List<RoadPoint> Points { get; set; } = new List<RoadPoint>();
         public List<Rating> Ratings { get; set; } = new List<Rating>();
     }

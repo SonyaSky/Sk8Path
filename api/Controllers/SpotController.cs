@@ -75,8 +75,51 @@ namespace api.Controllers
         public async Task<IActionResult> GetMySpots()
         {
             if (!User.IsAccessToken()) return Unauthorized();
-            var roads = await _spotService.GetMySpots(User.GetId());
-            return Ok(roads);
+            var spots = await _spotService.GetMySpots(User.GetId());
+            return Ok(spots);
+        }
+
+        [HttpPut("{id}/delete")]
+        [Authorize]
+        [SwaggerOperation("Send request to delete this spot")]
+        public async Task<IActionResult> SendRequestToDelete([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.SendRequestToDelete(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpPut("{id}/decline")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Decline request to delete spot (for admin)")]
+        public async Task<IActionResult> DeclineDeletingSpot([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.DeclineDeleting(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpDelete("{id}/approve")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Approve request to delete spot (for admin)")]
+        public async Task<IActionResult> ApproveDeletingSpot([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.ApproveDeleting(id);
+            if (response == null) return Ok();
+            return NotFound(response);
+        }
+
+        [HttpGet("deleting")]
+        [Authorize(Roles = "Admin")]
+        [SwaggerOperation("Get all spots that have request to delete them")]
+        public async Task<IActionResult> SendRequestToDelete()
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var response = await _spotService.ShowToDeleteSpots();
+            return Ok(response);
         }
     }
 }
