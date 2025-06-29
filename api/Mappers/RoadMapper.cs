@@ -42,7 +42,10 @@ namespace api.Mappers
                 Rating = road.Ratings.Count == 0
                     ? 0
                     : (double)road.RatingSum / road.Ratings.Count,
-                Points = road.Points.Select(p => p.ToDto()).ToList()
+                Points = road.Points.Select(p => p.ToDto()).ToList(),
+                FileId = road.FileId,
+                Name = road.Name,
+                Description = road.Description
             };
         }
     }

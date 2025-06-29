@@ -24,6 +24,7 @@ namespace api.Data
         public DbSet<RoadPoint> RoadPoints { get; set; }
         public DbSet<Road> Roads { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Models.File> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

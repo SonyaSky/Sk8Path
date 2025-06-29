@@ -10,6 +10,7 @@ namespace api.Models
     public class User : IdentityUser
     {
         public string? RefreshToken { get; set; }
+        public Guid? AvatarId { get; set; }
         public List<Rating> Ratings { get; set; } = new List<Rating>();
     }
 }

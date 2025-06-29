@@ -21,11 +21,11 @@ namespace api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ITokenService _tokenService;
-        public UserController(IUserService userService, ITokenService tokenService)
+        private readonly IFileService _fileService;
+        public UserController(IUserService userService, IFileService fileService)
         {
             _userService = userService;
-            _tokenService = tokenService;
+            _fileService = fileService;
         }
 
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
@@ -45,6 +45,15 @@ namespace api.Controllers
                     {
                         Status = "Error",
                         Message = $"Username {registerDto.Username} is already taken"
+                    });
+                }
+
+                if (registerDto.FileId != null && !await _fileService.DoesFileExists((Guid)registerDto.FileId))
+                {
+                    return NotFound(new ResponseModel
+                    {
+                        Status = "Error",
+                        Message = $"File with id={registerDto.FileId} not found"
                     });
                 }
 

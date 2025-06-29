@@ -18,5 +18,6 @@ namespace api.Dtos
         public string Username { get; set; } = string.Empty;
         [PhoneNumber]
         public string? PhoneNumber { get; set; }
+        public Guid? AvatarId { get; set; }
     }
 }

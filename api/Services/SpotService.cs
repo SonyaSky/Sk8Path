@@ -49,7 +49,10 @@ namespace api.Services
                 RatingSum = spotDto.Rating,
                 Latitude = spotDto.Latitude,
                 Longitude = spotDto.Longitude,
-                CreateDate = DateTime.UtcNow
+                CreateDate = DateTime.UtcNow,
+                Name = spotDto.Name,
+                Description = spotDto.Description,
+                FileId = spotDto.FileId
             };
             var rating = new Rating
             {

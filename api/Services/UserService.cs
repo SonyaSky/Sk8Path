@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using api.Dtos;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +41,7 @@ namespace api.Services
             user.Email = profileDto.Email;
             user.UserName = profileDto.Username;
             user.PhoneNumber = profileDto.PhoneNumber;
+            user.AvatarId = profileDto.AvatarId;
 
             await _userManager.UpdateAsync(user);
             return user.ToProfileDto();
@@ -62,17 +65,24 @@ namespace api.Services
         {
             var user = registerDto.ToUser();
             var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
-            if (createdUser.Succeeded) {
+            if (createdUser.Succeeded)
+            {
                 var roleResult = await _userManager.AddToRoleAsync(user, "User");
-                if (roleResult.Succeeded) {
-                    return new TokenResponse{
+                if (roleResult.Succeeded)
+                {
+                    return new TokenResponse
+                    {
                         AccessToken = await _tokenService.CreateAccessToken(user.Id, ["User"]),
                         RefreshToken = await _tokenService.CreateRefreshToken(user.Id, ["User"]),
                     };
-                } else {
+                }
+                else
+                {
                     return null;
                 }
-            } else {
+            }
+            else
+            {
                 return null;
             }
         }
