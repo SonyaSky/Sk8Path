@@ -22,5 +22,6 @@ namespace api.Interfaces
         Task<List<SpotDto>> ShowFavouriteSpots(string userId);
         Task<ResponseModel?> AddToFavourites(Guid id, string userId);
         Task<ResponseModel?> RemoveFromFavourites(Guid id, string userId);
+        Task<RatingDto?> GetSpotRating(Guid spotId, string userId);
     }
 }

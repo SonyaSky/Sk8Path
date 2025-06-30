@@ -130,6 +130,18 @@ namespace api.Services
             return spots;
         }
 
+        public async Task<RatingDto?> GetSpotRating(Guid spotId, string userId)
+        {
+            var spot = await _context.Spots.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == spotId);
+            if (spot == null) return null;
+            var rating = await _context.Ratings.FirstOrDefaultAsync(x => x.ObjectId == spotId && x.UserId == userId);
+            if (rating == null) return new RatingDto { Rating = 0 };
+            return new RatingDto
+            {
+                Rating = rating.Score
+            };
+        }
+
         public async Task<ResponseModel?> RateSpot(CreateRatingDto ratingDto, string userId)
         {
             var spot = await _context.Spots.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);

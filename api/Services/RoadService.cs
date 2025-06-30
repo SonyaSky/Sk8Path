@@ -118,6 +118,18 @@ namespace api.Services
             return roads;
         }
 
+        public async Task<RatingDto?> GetRoadRating(Guid roadId, string userId)
+        {
+            var road = await _context.Roads.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == roadId);
+            if (road == null) return null;
+            var rating = await _context.Ratings.FirstOrDefaultAsync(x => x.ObjectId == roadId && x.UserId == userId);
+            if (rating == null) return new RatingDto { Rating = 0 };
+            return new RatingDto
+            {
+                Rating = rating.Score
+            };
+        }
+
         public async Task<ResponseModel?> RateRoad(CreateRatingDto ratingDto, string userId)
         {
             var road = await _context.Roads.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == ratingDto.ObjectId);

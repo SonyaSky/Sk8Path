@@ -89,6 +89,17 @@ namespace api.Controllers
             return Ok(roads);
         }
 
+        [ProducesResponseType(typeof(List<RatingDto>), StatusCodes.Status200OK)]
+        [HttpGet("{id}/rating")]
+        [Authorize]
+        [SwaggerOperation("Get user's rating of the road")]
+        public async Task<IActionResult> GetFavouriteSpots([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var rating = await _roadService.GetRoadRating(id, User.GetId());
+            return Ok(rating);
+        }
+
         [HttpPut("{id}/delete")]
         [Authorize]
         [SwaggerOperation("Send request to delete this road")]

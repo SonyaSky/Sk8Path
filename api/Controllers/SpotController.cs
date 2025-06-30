@@ -89,6 +89,17 @@ namespace api.Controllers
             return Ok(spots);
         }
 
+        [ProducesResponseType(typeof(List<RatingDto>), StatusCodes.Status200OK)]
+        [HttpGet("{id}/rating")]
+        [Authorize]
+        [SwaggerOperation("Get user's rating of the spot")]
+        public async Task<IActionResult> GetFavouriteSpots([FromRoute] Guid id)
+        {
+            if (!User.IsAccessToken()) return Unauthorized();
+            var rating = await _spotService.GetSpotRating(id, User.GetId());
+            return Ok(rating);
+        }
+
         [ProducesResponseType(typeof(List<SpotDto>), StatusCodes.Status200OK)]
         [HttpGet("favourite")]
         [Authorize]

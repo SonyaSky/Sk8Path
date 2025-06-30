@@ -19,5 +19,6 @@ namespace api.Interfaces
         Task<ResponseModel?> SendRequestToDelete(Guid id);
         Task<ResponseModel?> ApproveDeleting(Guid id);
         Task<ResponseModel?> DeclineDeleting(Guid id);
+        Task<RatingDto?> GetRoadRating(Guid roadId, string userId);
     }
 }
